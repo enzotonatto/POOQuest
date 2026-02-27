@@ -8,7 +8,6 @@ struct AboutView: View {
         ZStack {
             Color(uiColor: .systemBackground).ignoresSafeArea()
 
-            // Back button
             VStack {
                 HStack {
                     Button {
@@ -16,9 +15,9 @@ struct AboutView: View {
                     } label: {
                         HStack(spacing: 4) {
                             Image(systemName: "chevron.left")
-                                .font(.system(size: 14, weight: .semibold))
-                            Text("Voltar")
-                                .font(.system(size: 15, weight: .medium))
+                                .font(.appLabel)
+                            Text("Back")
+                                .font(.appBody)
                         }
                         .foregroundStyle(.blue)
                         .padding(.horizontal, 14)
@@ -32,11 +31,9 @@ struct AboutView: View {
                 Spacer()
             }
 
-            // Content
             VStack(spacing: 0) {
                 Spacer()
 
-                // Avatar
                 Circle()
                     .fill(
                         LinearGradient(
@@ -56,9 +53,8 @@ struct AboutView: View {
 
                 Spacer().frame(height: 20)
 
-                // Name — substitua pelo seu nome
-                Text("Seu Nome")
-                    .font(.system(size: 22, weight: .bold))
+                Text("Your Name")
+                    .font(.appHeadline)
                     .foregroundStyle(.primary)
                     .opacity(appeared ? 1 : 0)
                     .offset(y: appeared ? 0 : 8)
@@ -66,17 +62,16 @@ struct AboutView: View {
 
                 Spacer().frame(height: 4)
 
-                Text("Estudante de Desenvolvimento · Brasil")
-                    .font(.system(size: 14, weight: .regular))
+                Text("Development Student · Brazil")
+                    .font(.appCaption)
                     .foregroundStyle(.secondary)
                     .opacity(appeared ? 1 : 0)
                     .animation(.easeOut(duration: 0.4).delay(0.25), value: appeared)
 
                 Spacer().frame(height: 24)
 
-                // Bio — substitua pelo seu texto
-                Text("Criei o POO Quest para o Swift Student Challenge para transformar conceitos abstratos de Programação Orientada a Objetos em algo visual, interativo e acessível para qualquer um.")
-                    .font(.system(size: 15, weight: .regular))
+                Text("I built OOP Quest for the Swift Student Challenge to turn abstract Object-Oriented Programming concepts into something visual, interactive, and accessible for everyone.")
+                    .font(.appBody)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 500)
@@ -88,8 +83,8 @@ struct AboutView: View {
                 Button {
                     appState.navigate(to: .home)
                 } label: {
-                    Text("Voltar ao início")
-                        .font(.system(size: 17, weight: .semibold))
+                    Text("Back to Home")
+                        .font(.appBodyMd)
                         .foregroundStyle(.white)
                         .frame(width: 200, height: 50)
                         .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 14, style: .continuous))

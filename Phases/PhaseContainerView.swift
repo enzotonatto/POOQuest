@@ -12,33 +12,33 @@ extension PhaseInfo {
     static let all: [PhaseInfo] = [
         PhaseInfo(
             number: 1,
-            title: "Classes & Objetos",
-            concept: "Uma **classe** é a planta do projeto. Um **objeto** é a instância criada a partir dela — cada objeto tem seus próprios dados.",
+            title: "Classes & Objects",
+            concept: "A **class** is the blueprint. An **object** is the instance created from it — each object holds its own data.",
             keywords: ["class Animal", "init()", "let rex = Animal()"]
         ),
         PhaseInfo(
             number: 2,
-            title: "Atributos & Métodos",
-            concept: "**Atributos** são os dados que o objeto guarda. **Métodos** são as ações que ele executa — eles podem ler e modificar esses dados.",
-            keywords: ["var energia: Int", "func latir()", "self.energia"]
+            title: "Properties & Methods",
+            concept: "**Properties** are the data an object stores. **Methods** are the actions it performs — they can read and modify that data.",
+            keywords: ["var energy: Int", "func bark()", "self.energy"]
         ),
         PhaseInfo(
             number: 3,
-            title: "Encapsulamento",
-            concept: "Proteja os dados internos com **private**. Exponha apenas o necessário via métodos públicos — isso evita alterações acidentais.",
-            keywords: ["private var saude", "func getSaude()", "func curar()"]
+            title: "Encapsulation",
+            concept: "Protect internal data with **private**. Expose only what is needed through public methods — this prevents accidental changes.",
+            keywords: ["private var health", "func getHealth()", "func heal()"]
         ),
         PhaseInfo(
             number: 4,
-            title: "Herança",
-            concept: "Uma classe pode **herdar** tudo de outra e adicionar ou sobrescrever comportamentos. Isso evita repetição de código.",
-            keywords: ["class Cachorro: Animal", "override func", "super.init()"]
+            title: "Inheritance",
+            concept: "A class can **inherit** everything from another and add or override behaviors. This avoids code repetition.",
+            keywords: ["class Dog: Animal", "override func", "super.init()"]
         ),
         PhaseInfo(
             number: 5,
-            title: "Polimorfismo",
-            concept: "A mesma mensagem, **respostas diferentes**. Objetos de tipos distintos podem ser tratados como o tipo pai — cada um reage do seu jeito.",
-            keywords: ["[Animal]", "for animal in lista", "animal.fazerSom()"]
+            title: "Polymorphism",
+            concept: "The same message, **different responses**. Objects of distinct types can be treated as the parent type — each one reacts its own way.",
+            keywords: ["[Animal]", "for animal in list", "animal.makeSound()"]
         )
     ]
 }
@@ -69,12 +69,11 @@ struct PhaseContainerView: View {
     private var leftPanel: some View {
         VStack(alignment: .leading, spacing: 0) {
 
-            // Phase pill
             HStack(spacing: 8) {
                 Circle()
                     .fill(Color.appPrimary)
                     .frame(width: 8, height: 8)
-                Text("Fase \(phaseNumber) de 5")
+                Text("Phase \(phaseNumber) of 5")
                     .font(.appLabel)
                     .foregroundStyle(.secondary)
             }
@@ -85,7 +84,6 @@ struct PhaseContainerView: View {
 
             Spacer().frame(height: 22)
 
-            // Title
             Text(info.title)
                 .font(.appTitle)
                 .foregroundStyle(.primary)
@@ -93,16 +91,14 @@ struct PhaseContainerView: View {
 
             Spacer().frame(height: 16)
 
-            // Concept
             ConceptText(info.concept)
-                .font(Font.system(size: 17, weight: .regular))
+                .font(.appBody)
                 .foregroundStyle(.secondary)
                 .lineSpacing(5)
                 .fixedSize(horizontal: false, vertical: true)
 
             Spacer().frame(height: 22)
 
-            // Keywords
             FlowLayout(spacing: 8) {
                 ForEach(info.keywords, id: \.self) { kw in
                     KeywordChip(text: kw)
@@ -111,7 +107,6 @@ struct PhaseContainerView: View {
 
             Spacer()
 
-            // Progress + Next button
             VStack(alignment: .leading, spacing: 20) {
                 progressDots
 
@@ -119,8 +114,8 @@ struct PhaseContainerView: View {
                     appState.advance(from: phaseNumber)
                 } label: {
                     HStack {
-                        Text(phaseNumber == 5 ? "Ver resultado" : "Próxima fase")
-                            .font(Font.system(size: 17, weight: .semibold))
+                        Text(phaseNumber == 5 ? "See results" : "Next phase")
+                            .font(.appBodyMd)
                         Spacer()
                         Image(systemName: "arrow.right")
                             .font(.appBodyMd)
@@ -186,7 +181,7 @@ struct ConceptText: View {
         for (i, part) in parts.enumerated() {
             var attr = AttributedString(part)
             if i % 2 == 1 {
-                attr.font = .system(size: 17, weight: .semibold)
+                attr.font = .appBodyMd
                 attr.foregroundColor = .primary
             }
             result.append(attr)

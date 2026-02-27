@@ -1,23 +1,24 @@
 import SwiftUI
 
-// Fase 5: Bloco 1 — montar o array [Animal] adicionando animais
-//         Bloco 2 — rodar o forEach e ver cada animal responder diferente
+// Phase 5: Block 1 — build the [Animal] array by adding animals
+//          Block 2 — run the forEach and watch each animal respond differently
 
 fileprivate struct AnimalEntry: Identifiable {
     let id = UUID()
     let emoji: String
     let type: String
-    let sound: String
+    let sound: String      // display text
+    let soundFile: String  // audio file name
 }
 
 struct Phase5View: View {
     @Binding var isComplete: Bool
 
     private let available: [AnimalEntry] = [
-        AnimalEntry(emoji: "🐶", type: "Cachorro", sound: "Au!"),
-        AnimalEntry(emoji: "🐱", type: "Gato",     sound: "Miau!"),
-        AnimalEntry(emoji: "🐦", type: "Passaro",  sound: "Piu!"),
-        AnimalEntry(emoji: "🐄", type: "Vaca",     sound: "Muuu!"),
+        AnimalEntry(emoji: "🐶", type: "Dog",  sound: "Woof!",  soundFile: "woof"),
+        AnimalEntry(emoji: "🐱", type: "Cat",  sound: "Meow!",  soundFile: "meow"),
+        AnimalEntry(emoji: "🐦", type: "Bird", sound: "Tweet!", soundFile: "tweet"),
+        AnimalEntry(emoji: "🐄", type: "Cow",  sound: "Moo!",   soundFile: "moo"),
     ]
 
     @State private var arrayItems: [AnimalEntry] = []
@@ -30,10 +31,10 @@ struct Phase5View: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                sectionLabel("BLOCO 1 — MONTE O ARRAY [Animal]")
+                sectionLabel("BLOCK 1 — BUILD THE [Animal] ARRAY")
                 block1Card
 
-                sectionLabel("BLOCO 2 — EXECUTE O LACO")
+                sectionLabel("BLOCK 2 — RUN THE LOOP")
                     .opacity(canRunLoop ? 1 : 0.4)
 
                 block2Card
@@ -54,11 +55,13 @@ struct Phase5View: View {
                         withAnimation(.spring(response: 0.35, dampingFraction: 0.65)) {
                             arrayItems.append(animal)
                         }
+                        // Play sound preview when adding to array
+                        AudioManager.shared.playAnimal(animal.soundFile)
                     } label: {
                         VStack(spacing: 4) {
                             Text(animal.emoji).font(.system(size: 28))
                             Text(animal.type)
-                                .font(Font.system(size: 13, weight: .semibold))
+                                .font(.appLabel)
                                 .foregroundStyle(added ? Color(uiColor: .placeholderText) : .primary)
                         }
                         .frame(maxWidth: .infinity, minHeight: 70)
@@ -78,10 +81,10 @@ struct Phase5View: View {
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("var animais: [Animal] = [")
+                Text("var animals: [Animal] = [")
                     .font(.appCode).foregroundStyle(.secondary)
                 if arrayItems.isEmpty {
-                    Text("   // vazio").font(.appCode)
+                    Text("   // empty").font(.appCode)
                         .foregroundStyle(Color(uiColor: .placeholderText)).padding(.leading, 16)
                 } else {
                     ForEach(Array(arrayItems.enumerated()), id: \.element.id) { idx, item in
@@ -102,9 +105,9 @@ struct Phase5View: View {
             .background(Color.appFill, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
             if !canRunLoop {
-                FeedbackBanner(kind: .neutral, message: "Adicione pelo menos 3 animais ao array.")
+                FeedbackBanner(kind: .neutral, message: "Add at least 3 animals to the array.")
             } else {
-                FeedbackBanner(kind: .success, message: "\(arrayItems.count) animais. Pronto para o laco!")
+                FeedbackBanner(kind: .success, message: "\(arrayItems.count) animals. Ready for the loop!")
             }
         }
         .padding(20)
@@ -115,9 +118,9 @@ struct Phase5View: View {
     private var block2Card: some View {
         VStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("animais.forEach { animal in")
+                Text("animals.forEach { animal in")
                     .font(.appCode).foregroundStyle(.secondary)
-                Text("   animal.fazerSom()")
+                Text("   animal.makeSound()")
                     .font(.appCodeMd).foregroundStyle(.appPrimary)
                 Text("}").font(.appCode).foregroundStyle(.secondary)
             }
@@ -139,8 +142,8 @@ struct Phase5View: View {
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: loopTriggered ? "checkmark" : "play.fill").font(.appLabel)
-                    Text(loopTriggered ? "Executado!" : "Executar laco")
-                        .font(Font.system(size: 17, weight: .semibold))
+                    Text(loopTriggered ? "Executed!" : "Run loop")
+                        .font(.appBodyMd)
                 }
                 .foregroundStyle(loopTriggered ? Color(uiColor: .placeholderText) : .white)
                 .frame(maxWidth: .infinity, minHeight: 52)
@@ -152,7 +155,7 @@ struct Phase5View: View {
 
             if isComplete {
                 FeedbackBanner(kind: .success,
-                               message: "Cada animal respondeu diferente com a mesma chamada. Isso e polimorfismo!")
+                               message: "Each animal responded differently to the same call. That's polymorphism!")
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
@@ -164,15 +167,17 @@ struct Phase5View: View {
 
     private func runLoop() {
         for (i, animal) in arrayItems.enumerated() {
-            let delay = Double(i) * 0.45
+            let delay = Double(i) * 0.7  // slightly longer gap so sounds don't overlap
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                 withAnimation { speakingId = animal.id }
+                // Play the actual animal sound
+                AudioManager.shared.playAnimal(animal.soundFile)
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay + 0.35) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay + 0.55) {
                 withAnimation { doneIds.insert(animal.id); speakingId = nil }
             }
         }
-        let finish = Double(arrayItems.count) * 0.45 + 0.6
+        let finish = Double(arrayItems.count) * 0.7 + 0.5
         DispatchQueue.main.asyncAfter(deadline: .now() + finish) {
             withAnimation { isComplete = true }
         }

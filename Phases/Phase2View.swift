@@ -1,7 +1,7 @@
 import SwiftUI
 
-// Fase 2: Bloco 1 — chamar métodos no Animal e ver atributos mudarem.
-//         Bloco 2 — quiz: qual método aumenta a energia?
+// Phase 2: Block 1 — call methods on Animal and watch attributes change.
+//          Block 2 — quiz: which method increases energy?
 
 struct Phase2View: View {
     @Binding var isComplete: Bool
@@ -11,7 +11,6 @@ struct Phase2View: View {
     @State private var emojiScale: CGFloat = 1
     @State private var methodsUsed: Set<String> = []
 
-    // Quiz state
     @State private var quizAnswer: QuizState = .unanswered
     @State private var wrongTaps: Set<String> = []
 
@@ -20,18 +19,17 @@ struct Phase2View: View {
     enum QuizState { case unanswered, wrong(String), correct }
 
     private let quizOptions = [
-        ("latir()",  false,  "🗣️"),
-        ("comer()",  true,   "🍖"),
-        ("correr()", false,  "🏃"),
+        ("bark()",  false, "🗣️"),
+        ("eat()",   true,  "🍖"),
+        ("run()",   false, "🏃"),
     ]
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
 
-                sectionLabel("BLOCO 1 — CHAME OS MÉTODOS")
+                sectionLabel("BLOCK 1 — CALL THE METHODS")
 
-                // Animal card
                 VStack(spacing: 16) {
                     HStack(spacing: 20) {
                         Text("🐶")
@@ -41,13 +39,12 @@ struct Phase2View: View {
 
                         VStack(alignment: .leading, spacing: 10) {
                             Text("rex : Animal")
-                                .font(Font.system(size: 18, weight: .bold, design: .monospaced))
+                                .font(.appCodeMd)
                                 .foregroundStyle(.primary)
 
-                            // Energy bar
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack {
-                                    Text("energia:")
+                                    Text("energy:")
                                         .font(.appCode)
                                         .foregroundStyle(.secondary)
                                     Text("\(energy)")
@@ -70,16 +67,14 @@ struct Phase2View: View {
                         }
                     }
 
-                    // Method buttons
                     HStack(spacing: 10) {
-                        ForEach([("latir()", "🗣️", -15), ("comer()", "🍖", +25), ("correr()", "🏃", -20)], id: \.0) { name, emoji, delta in
+                        ForEach([("bark()", "🗣️", -15), ("eat()", "🍖", +25), ("run()", "🏃", -20)], id: \.0) { name, emoji, delta in
                             MethodBtn(emoji: emoji, label: name, used: methodsUsed.contains(name)) {
                                 callMethod(name: name, delta: delta)
                             }
                         }
                     }
 
-                    // Log
                     if !log.isEmpty {
                         VStack(alignment: .leading, spacing: 4) {
                             ForEach(log.suffix(3), id: \.self) { line in
@@ -98,16 +93,15 @@ struct Phase2View: View {
                 .shadow(color: .black.opacity(0.06), radius: 12, x: 0, y: 3)
 
                 if !quizUnlocked {
-                    FeedbackBanner(kind: .neutral, message: "Use os 3 métodos para desbloquear o quiz.")
+                    FeedbackBanner(kind: .neutral, message: "Use all 3 methods to unlock the quiz.")
                 }
 
-                // Quiz block
-                sectionLabel("BLOCO 2 — QUIZ")
+                sectionLabel("BLOCK 2 — QUIZ")
                     .opacity(quizUnlocked ? 1 : 0.4)
 
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Qual método **aumenta** a energia do Animal?")
-                        .font(Font.system(size: 17, weight: .regular))
+                    Text("Which method **increases** the Animal's energy?")
+                        .font(.appBody)
                         .foregroundStyle(.primary)
 
                     VStack(spacing: 10) {
@@ -124,7 +118,7 @@ struct Phase2View: View {
                     }
 
                     if case .correct = quizAnswer {
-                        FeedbackBanner(kind: .success, message: "Correto! comer() adiciona energia ao Animal.")
+                        FeedbackBanner(kind: .success, message: "Correct! eat() adds energy to the Animal.")
                     }
                 }
                 .padding(20)
@@ -137,7 +131,6 @@ struct Phase2View: View {
         }
     }
 
-    // MARK: Helpers
     private var energyColor: Color {
         energy > 60 ? .appSuccess : energy > 30 ? .appWarning : .appError
     }
@@ -146,8 +139,9 @@ struct Phase2View: View {
         methodsUsed.insert(name)
         energy = max(0, min(100, energy + delta))
         let sign = delta > 0 ? "+" : ""
-        log.append("rex.\(name)  →  energia \(sign)\(delta)  =  \(energy)")
-        // bounce
+        log.append("rex.\(name)  →  energy \(sign)\(delta)  =  \(energy)")
+        // Dog barks on every interaction
+        AudioManager.shared.playAnimal("woof")
         emojiScale = 1.3
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { emojiScale = 1 }
     }
@@ -174,7 +168,6 @@ struct Phase2View: View {
     }
 }
 
-// MARK: - Method button
 private struct MethodBtn: View {
     let emoji: String
     let label: String
@@ -203,7 +196,6 @@ private struct MethodBtn: View {
     }
 }
 
-// MARK: - Quiz option
 enum QuizOptionState { case idle, correct, wrong }
 
 private struct QuizOption: View {
@@ -221,22 +213,15 @@ private struct QuizOption: View {
                     .foregroundStyle(textColor)
                 Spacer()
                 if state == .correct {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.appSuccess)
-                        .font(.system(size: 20))
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(.appSuccess).font(.system(size: 20))
                 } else if state == .wrong {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.appError)
-                        .font(.system(size: 20))
+                    Image(systemName: "xmark.circle.fill").foregroundStyle(.appError).font(.system(size: 20))
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
             .background(bgColor, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(borderColor, lineWidth: 1.5)
-            )
+            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(borderColor, lineWidth: 1.5))
         }
         .buttonStyle(.plain)
         .disabled(state == .correct || state == .wrong)

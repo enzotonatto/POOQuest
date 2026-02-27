@@ -6,11 +6,11 @@ struct CompletionView: View {
     @State private var ringProgress: CGFloat = 0
 
     private let concepts = [
-        "Classes & Objetos",
-        "Atributos & Métodos",
-        "Encapsulamento",
-        "Herança",
-        "Polimorfismo"
+        "Classes & Objects",
+        "Properties & Methods",
+        "Encapsulation",
+        "Inheritance",
+        "Polymorphism"
     ]
 
     var body: some View {
@@ -20,7 +20,6 @@ struct CompletionView: View {
             VStack(spacing: 0) {
                 Spacer()
 
-                // Ring
                 ZStack {
                     Circle()
                         .stroke(Color(uiColor: .systemFill), lineWidth: 6)
@@ -43,8 +42,8 @@ struct CompletionView: View {
 
                 Spacer().frame(height: 24)
 
-                Text("Você completou!")
-                    .font(.system(size: 36, weight: .bold))
+                Text("You completed it!")
+                    .font(.appLargeTitle)
                     .foregroundStyle(.primary)
                     .tracking(-0.5)
                     .opacity(appeared ? 1 : 0)
@@ -53,8 +52,8 @@ struct CompletionView: View {
 
                 Spacer().frame(height: 8)
 
-                Text("Você aprendeu os pilares da POO em menos de 3 minutos.")
-                    .font(.system(size: 16, weight: .regular))
+                Text("You learned the pillars of OOP in under 3 minutes.")
+                    .font(.appBody)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .opacity(appeared ? 1 : 0)
@@ -62,11 +61,10 @@ struct CompletionView: View {
 
                 Spacer().frame(height: 28)
 
-                // Concept pills
                 HStack(spacing: 8) {
                     ForEach(Array(concepts.enumerated()), id: \.offset) { index, concept in
                         Text(concept)
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.appLabel)
                             .foregroundStyle(.primary)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 6)
@@ -82,8 +80,8 @@ struct CompletionView: View {
                 Button {
                     appState.restart()
                 } label: {
-                    Text("Voltar ao início")
-                        .font(.system(size: 17, weight: .semibold))
+                    Text("Back to Home")
+                        .font(.appBodyMd)
                         .foregroundStyle(.white)
                         .frame(width: 200, height: 50)
                         .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 14, style: .continuous))

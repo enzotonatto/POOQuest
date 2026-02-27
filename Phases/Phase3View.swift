@@ -1,40 +1,37 @@
 import SwiftUI
 
-// Fase 3: Três blocos
-// Bloco 1 — tentar acessar private diretamente (erro esperado)
-// Bloco 2 — usar o método público correto (sucesso)
-// Bloco 3 — chamar curar() e confirmar que saude mudou
+// Phase 3: Three blocks
+// Block 1 — try to access private directly (expected error)
+// Block 2 — use the correct public method (success)
+// Block 3 — call heal() and confirm health changed
 
 struct Phase3View: View {
     @Binding var isComplete: Bool
 
-    @State private var block1Done = false   // tentou acesso direto
-    @State private var block2Done = false   // usou getSaude()
-    @State private var saude: Int = 40      // começa baixo pra ver efeito de curar
-    @State private var block3Done = false   // chamou curar()
-
-    @State private var shakeBlock1 = false
+    @State private var block1Done = false
+    @State private var block2Done = false
+    @State private var health: Int = 40
+    @State private var block3Done = false
     @State private var shakeOffset: CGFloat = 0
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
 
-                // Class reference card
                 classCard
 
-                sectionLabel("BLOCO 1 — ACESSO DIRETO (tente!)")
+                sectionLabel("BLOCK 1 — DIRECT ACCESS (try it!)")
 
                 block1Card
 
-                sectionLabel("BLOCO 2 — ACESSO VIA MÉTODO")
+                sectionLabel("BLOCK 2 — ACCESS VIA METHOD")
                     .opacity(block1Done ? 1 : 0.4)
 
                 block2Card
                     .opacity(block1Done ? 1 : 0.4)
                     .disabled(!block1Done)
 
-                sectionLabel("BLOCO 3 — MODIFIQUE VIA MÉTODO")
+                sectionLabel("BLOCK 3 — MODIFY VIA METHOD")
                     .opacity(block2Done ? 1 : 0.4)
 
                 block3Card
@@ -45,24 +42,14 @@ struct Phase3View: View {
         }
     }
 
-    // MARK: Class reference card
     private var classCard: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("class Animal {")
                 .font(.appCodeMd).foregroundStyle(.primary)
             Group {
-                codeLine(indent: 1, parts: [
-                    ("private var", Color.appError),
-                    (" saude: Int = 40", .secondary)
-                ])
-                codeLine(indent: 1, parts: [
-                    ("func", Color.appPrimary),
-                    (" getSaude() -> Int", .secondary)
-                ])
-                codeLine(indent: 1, parts: [
-                    ("func", Color.appPrimary),
-                    (" curar()", .secondary)
-                ])
+                codeLine(indent: 1, parts: [("private var", Color.appError), (" health: Int = 40", .secondary)])
+                codeLine(indent: 1, parts: [("func", Color.appPrimary), (" getHealth() -> Int", .secondary)])
+                codeLine(indent: 1, parts: [("func", Color.appPrimary), (" heal()", .secondary)])
             }
             Text("}")
                 .font(.appCodeMd).foregroundStyle(.primary)
@@ -73,22 +60,21 @@ struct Phase3View: View {
         .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 2)
     }
 
-    // MARK: Block 1
     private var block1Card: some View {
         VStack(spacing: 14) {
-            Text("O que acontece se tentarmos acessar `saude` diretamente?")
-                .font(Font.system(size: 17, weight: .regular))
+            Text("What happens if we try to access `health` directly?")
+                .font(.appBody)
                 .foregroundStyle(.primary)
 
             HStack(spacing: 10) {
-                wrongAccessBtn("rex.saude")
-                wrongAccessBtn("rex.saude = 100")
+                wrongAccessBtn("rex.health")
+                wrongAccessBtn("rex.health = 100")
             }
 
             if block1Done {
                 FeedbackBanner(
                     kind: .error,
-                    message: "error: 'saude' is inaccessible due to 'private' protection level"
+                    message: "error: 'health' is inaccessible due to 'private' protection level"
                 )
                 .offset(x: shakeOffset)
                 .transition(.move(edge: .top).combined(with: .opacity))
@@ -103,32 +89,34 @@ struct Phase3View: View {
 
     private func wrongAccessBtn(_ label: String) -> some View {
         Button {
-            block1Done = true
+            withAnimation { block1Done = true }
             runShake()
         } label: {
             Text(label)
                 .font(.appCode)
-                .foregroundStyle(.red)
+                .foregroundStyle(block1Done ? Color.appError : .primary)
                 .frame(maxWidth: .infinity, minHeight: 48)
-                .background(Color.appError.opacity(0.08), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Color.appError.opacity(0.2), lineWidth: 1.5))
+                .background(
+                    block1Done ? Color.appError.opacity(0.08) : Color.appFill,
+                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(block1Done ? Color.appError.opacity(0.3) : Color.clear, lineWidth: 1.5)
+                )
         }
         .buttonStyle(.plain)
     }
 
-    // MARK: Block 2
     private var block2Card: some View {
         VStack(spacing: 14) {
-            Text("Agora use o método público para ler `saude` com segurança.")
-                .font(Font.system(size: 17, weight: .regular))
+            Text("Now use the public method to read `health` safely.")
+                .font(.appBody)
                 .foregroundStyle(.primary)
 
             HStack(spacing: 10) {
-                // Wrong
-                Button {
-                    // no-op, wrong attempt shows nothing extra here
-                } label: {
-                    Text("rex.saude")
+                Button { } label: {
+                    Text("rex.health")
                         .font(.appCode)
                         .foregroundStyle(Color(uiColor: .placeholderText))
                         .frame(maxWidth: .infinity, minHeight: 48)
@@ -136,16 +124,12 @@ struct Phase3View: View {
                 }
                 .buttonStyle(.plain)
                 .disabled(true)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(Color.appError.opacity(0.2), lineWidth: 1.5)
-                )
+                .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Color.appError.opacity(0.2), lineWidth: 1.5))
 
-                // Correct
                 Button {
                     withAnimation { block2Done = true }
                 } label: {
-                    Text("rex.getSaude()")
+                    Text("rex.getHealth()")
                         .font(.appCodeMd)
                         .foregroundStyle(block2Done ? .white : Color.appPrimary)
                         .frame(maxWidth: .infinity, minHeight: 48)
@@ -160,7 +144,7 @@ struct Phase3View: View {
             }
 
             if block2Done {
-                FeedbackBanner(kind: .success, message: "rex.getSaude()  →  \(saude) ✓  Acesso seguro via método público.")
+                FeedbackBanner(kind: .success, message: "rex.getHealth()  →  \(health) ✓  Safe access via public method.")
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
@@ -170,24 +154,21 @@ struct Phase3View: View {
         .animation(.easeOut(duration: 0.25), value: block2Done)
     }
 
-    // MARK: Block 3
     private var block3Card: some View {
         VStack(spacing: 14) {
             HStack(spacing: 16) {
-                // Animal health display
                 VStack(spacing: 8) {
-                    Text("🐶")
-                        .font(.system(size: 46))
-                    Text("saude: \(saude)")
+                    Text("🐶").font(.system(size: 46))
+                    Text("health: \(health)")
                         .font(.appCodeMd)
-                        .foregroundStyle(saude > 60 ? Color.appSuccess : Color.appWarning)
+                        .foregroundStyle(health > 60 ? Color.appSuccess : Color.appWarning)
                     GeometryReader { geo in
                         ZStack(alignment: .leading) {
                             Capsule().fill(Color.appFill).frame(height: 8)
                             Capsule()
-                                .fill(saude > 60 ? Color.appSuccess : Color.appWarning)
-                                .frame(width: geo.size.width * CGFloat(saude) / 100, height: 8)
-                                .animation(.spring(response: 0.5, dampingFraction: 0.7), value: saude)
+                                .fill(health > 60 ? Color.appSuccess : Color.appWarning)
+                                .frame(width: geo.size.width * CGFloat(health) / 100, height: 8)
+                                .animation(.spring(response: 0.5, dampingFraction: 0.7), value: health)
                         }
                     }
                     .frame(height: 8)
@@ -197,18 +178,18 @@ struct Phase3View: View {
                 Divider().frame(height: 80)
 
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("O método curar() é público e\nmodifica saude internamente.")
-                        .font(Font.system(size: 15, weight: .regular))
+                    Text("heal() is public and\nmodifies health internally.")
+                        .font(.appCode)
                         .foregroundStyle(.secondary)
                         .lineSpacing(3)
 
                     Button {
-                        withAnimation { saude = min(100, saude + 40) }
+                        withAnimation { health = min(100, health + 40) }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             withAnimation { block3Done = true; isComplete = true }
                         }
                     } label: {
-                        Text("rex.curar()")
+                        Text("rex.heal()")
                             .font(.appCodeMd)
                             .foregroundStyle(block3Done ? Color(uiColor: .placeholderText) : .white)
                             .frame(maxWidth: .infinity, minHeight: 46)
@@ -223,7 +204,7 @@ struct Phase3View: View {
             }
 
             if block3Done {
-                FeedbackBanner(kind: .success, message: "curar() modificou saude internamente. Fora da classe, ninguém acessa diretamente.")
+                FeedbackBanner(kind: .success, message: "heal() modified health internally. Outside the class, nobody accesses it directly.")
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
@@ -233,7 +214,6 @@ struct Phase3View: View {
         .animation(.easeOut(duration: 0.25), value: block3Done)
     }
 
-    // MARK: Helpers
     private func runShake() {
         let keyframes: [(CGFloat, Double)] = [(-10, 0), (10, 0.08), (-6, 0.16), (6, 0.24), (0, 0.32)]
         for (offset, delay) in keyframes {
@@ -250,8 +230,7 @@ struct Phase3View: View {
 
     private func codeLine(indent: Int, parts: [(String, Color)]) -> some View {
         HStack(spacing: 0) {
-            Text(String(repeating: "  ", count: indent))
-                .font(.appCode).foregroundStyle(.clear)
+            Text(String(repeating: "  ", count: indent)).font(.appCode).foregroundStyle(.clear)
             ForEach(Array(parts.enumerated()), id: \.offset) { _, part in
                 Text(part.0).font(.appCode).foregroundStyle(part.1)
             }

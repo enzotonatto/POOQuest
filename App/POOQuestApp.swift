@@ -6,6 +6,9 @@ struct POOQuestApp: App {
         WindowGroup {
             ContentView()
                 .preferredColorScheme(.light)
+                .onAppear {
+                        AudioManager.shared.playMusic()
+                    }
         }
     }
 }

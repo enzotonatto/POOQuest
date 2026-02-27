@@ -11,9 +11,8 @@ struct HomeView: View {
             VStack(spacing: 0) {
                 Spacer()
 
-                // Eyebrow
                 Text("Swift Student Challenge")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.appLabel)
                     .foregroundStyle(.secondary)
                     .kerning(1.5)
                     .textCase(.uppercase)
@@ -23,9 +22,8 @@ struct HomeView: View {
 
                 Spacer().frame(height: 16)
 
-                // Title
-                Text("POO Quest.")
-                    .font(.system(size: 64, weight: .bold, design: .default))
+                Text("OOP Quest.")
+                    .font(.appDisplay)
                     .foregroundStyle(.primary)
                     .tracking(-1.5)
                     .opacity(appeared ? 1 : 0)
@@ -34,9 +32,8 @@ struct HomeView: View {
 
                 Spacer().frame(height: 10)
 
-                // Subtitle
-                Text("Aprenda orientação a objetos em minutos.")
-                    .font(.system(size: 18, weight: .regular))
+                Text("Learn object-oriented programming in minutes.")
+                    .font(.appSubheadline)
                     .foregroundStyle(.secondary)
                     .opacity(appeared ? 1 : 0)
                     .offset(y: appeared ? 0 : 10)
@@ -44,12 +41,11 @@ struct HomeView: View {
 
                 Spacer().frame(height: 48)
 
-                // Primary CTA
                 Button {
                     appState.navigate(to: .phase(1))
                 } label: {
-                    Text("Iniciar")
-                        .font(.system(size: 17, weight: .semibold))
+                    Text("Get Started")
+                        .font(.appBodyMd)
                         .foregroundStyle(.white)
                         .frame(width: 200, height: 50)
                         .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
@@ -61,12 +57,11 @@ struct HomeView: View {
 
                 Spacer().frame(height: 16)
 
-                // Secondary CTA
                 Button {
                     appState.navigate(to: .about)
                 } label: {
-                    Text("Sobre mim")
-                        .font(.system(size: 15, weight: .medium))
+                    Text("About")
+                        .font(.appBody)
                         .foregroundStyle(.blue)
                 }
                 .buttonStyle(.plain)
@@ -79,10 +74,4 @@ struct HomeView: View {
         .onAppear { appeared = true }
         .onDisappear { appeared = false }
     }
-}
-
-#Preview {
-    HomeView()
-        .environmentObject(AppState())
-        .frame(width: 1024, height: 768)
 }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - Paleta nativa Apple (um único tom azul como primário)
+// MARK: - Color palette
 extension Color {
     static let appPrimary   = Color(uiColor: .systemBlue)
     static let appSuccess   = Color(uiColor: .systemGreen)
@@ -12,7 +12,6 @@ extension Color {
     static let appBorder    = Color(uiColor: .separator)
 }
 
-// Permite usar .appPrimary, .appSuccess etc diretamente em foregroundStyle / background
 extension ShapeStyle where Self == Color {
     static var appPrimary:   Color { .appPrimary }
     static var appSuccess:   Color { .appSuccess }
@@ -24,19 +23,22 @@ extension ShapeStyle where Self == Color {
     static var appBorder:    Color { .appBorder }
 }
 
-// MARK: - Escala tipográfica para iPad
+// MARK: - Type scale
 extension Font {
-    static let appTitle    = Font.system(size: 34, weight: .bold)
-    static let appHeadline = Font.system(size: 22, weight: .bold)
-    static let appBody     = Font.system(size: 17, weight: .regular)
-    static let appBodyMd   = Font.system(size: 17, weight: .medium)
-    static let appCode     = Font.system(size: 15, weight: .regular, design: .monospaced)
-    static let appCodeMd   = Font.system(size: 15, weight: .semibold, design: .monospaced)
-    static let appLabel    = Font.system(size: 13, weight: .semibold)
-    static let appCaption  = Font.system(size: 12, weight: .medium)
+    static var appDisplay:     Font { .system(size: 64, weight: .bold) }
+    static var appLargeTitle:  Font { .system(size: 36, weight: .bold) }
+    static var appTitle:       Font { .system(size: 34, weight: .bold) }
+    static var appHeadline:    Font { .system(size: 22, weight: .bold) }
+    static var appSubheadline: Font { .system(size: 18, weight: .regular) }
+    static var appBody:        Font { .system(size: 17, weight: .regular) }
+    static var appBodyMd:      Font { .system(size: 17, weight: .medium) }
+    static var appCode:        Font { .system(size: 15, weight: .regular, design: .monospaced) }
+    static var appCodeMd:      Font { .system(size: 15, weight: .semibold, design: .monospaced) }
+    static var appLabel:       Font { .system(size: 13, weight: .semibold) }
+    static var appCaption:     Font { .system(size: 12, weight: .medium) }
 }
 
-// MARK: - Botão padrão do app
+// MARK: - Primary button
 struct AppButton: View {
     let label: String
     let icon: String?
@@ -53,7 +55,7 @@ struct AppButton: View {
         Button(action: action) {
             HStack(spacing: 8) {
                 if let icon { Image(systemName: icon).font(.appLabel) }
-                Text(label).font(Font.system(size: 17, weight: .semibold))
+                Text(label).font(.appBodyMd)
             }
             .foregroundStyle(fgColor)
             .frame(maxWidth: .infinity, minHeight: 52)
@@ -79,7 +81,7 @@ struct AppButton: View {
     }
 }
 
-// MARK: - Chip de keyword
+// MARK: - Keyword chip
 struct KeywordChip: View {
     let text: String
     var selected: Bool = false

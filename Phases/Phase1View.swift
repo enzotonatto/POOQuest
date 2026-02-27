@@ -10,11 +10,11 @@ struct Phase1View: View {
     }
 
     let allProps: [Prop] = [
-        Prop(key: "nome",    type: "String",  emoji: "🏷️"),
-        Prop(key: "especie", type: "String",  emoji: "🐾"),
-        Prop(key: "som",     type: "String",  emoji: "🔊"),
-        Prop(key: "energia", type: "Int",     emoji: "⚡"),
-        Prop(key: "peso",    type: "Double",  emoji: "⚖️"),
+        Prop(key: "name",    type: "String",  emoji: "🏷️"),
+        Prop(key: "species", type: "String",  emoji: "🐾"),
+        Prop(key: "sound",   type: "String",  emoji: "🔊"),
+        Prop(key: "energy",  type: "Int",     emoji: "⚡"),
+        Prop(key: "weight",  type: "Double",  emoji: "⚖️"),
     ]
 
     @State private var selected: Set<String> = []
@@ -26,10 +26,10 @@ struct Phase1View: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                sectionLabel("BLOCO 1 — MONTE A CLASSE")
+                sectionLabel("BLOCK 1 — BUILD THE CLASS")
                 classCard
                 hintBanner
-                sectionLabel("BLOCO 2 — INSTANCIE O OBJETO")
+                sectionLabel("BLOCK 2 — INSTANTIATE THE OBJECT")
                     .opacity(canInstantiate ? 1 : 0.4)
                 instantiationCard
             }
@@ -54,10 +54,7 @@ struct Phase1View: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(allProps, id: \.key) { prop in
-                    PropRow(
-                        prop: prop,
-                        isSelected: selected.contains(prop.key)
-                    ) {
+                    PropRow(prop: prop, isSelected: selected.contains(prop.key)) {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                             if selected.contains(prop.key) {
                                 selected.remove(prop.key)
@@ -83,7 +80,7 @@ struct Phase1View: View {
     @ViewBuilder
     private var hintBanner: some View {
         if selected.count < 3 {
-            FeedbackBanner(kind: .neutral, message: "Selecione pelo menos 3 propriedades para instanciar.")
+            FeedbackBanner(kind: .neutral, message: "Select at least 3 properties to instantiate.")
         }
     }
 
@@ -91,7 +88,7 @@ struct Phase1View: View {
         VStack(spacing: 16) {
             if instantiated {
                 instancePreview
-                FeedbackBanner(kind: .success, message: "Instancia criada! rex agora e um objeto do tipo Animal.")
+                FeedbackBanner(kind: .success, message: "Instance created! rex is now an object of type Animal.")
             } else {
                 preInstantiateContent
             }
@@ -114,7 +111,7 @@ struct Phase1View: View {
                 }
 
             Text("rex : Animal")
-                .font(Font.system(size: 20, weight: .bold, design: .monospaced))
+                .font(.appCodeMd)
                 .foregroundStyle(.appPrimary)
 
             VStack(alignment: .leading, spacing: 6) {
@@ -142,7 +139,7 @@ struct Phase1View: View {
                 .padding(16)
                 .background(Color.appFill, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
-            AppButton("Criar instancia", icon: "plus.circle") {
+            AppButton("Create instance", icon: "plus.circle") {
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.65)) {
                     instantiated = true
                     isComplete = true
@@ -153,8 +150,6 @@ struct Phase1View: View {
         }
     }
 
-    // MARK: - Helpers
-
     private func sectionLabel(_ text: String) -> some View {
         Text(text)
             .font(.appLabel)
@@ -164,7 +159,6 @@ struct Phase1View: View {
     }
 }
 
-// MARK: - Prop value row (extracted to help compiler)
 private struct PropValueRow: View {
     let prop: Phase1View.Prop
 
@@ -190,7 +184,6 @@ private struct PropValueRow: View {
     }
 }
 
-// MARK: - Prop row
 private struct PropRow: View {
     let prop: Phase1View.Prop
     let isSelected: Bool

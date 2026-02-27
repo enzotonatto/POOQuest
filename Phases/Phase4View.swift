@@ -1,7 +1,7 @@
 import SwiftUI
 
-// Fase 4: Bloco 1 — criar subclasses de Animal uma a uma
-//         Bloco 2 — quiz: o que `override` faz?
+// Phase 4: Block 1 — create subclasses of Animal one by one
+//          Block 2 — quiz: what does `override` do?
 
 struct Phase4View: View {
     @Binding var isComplete: Bool
@@ -12,12 +12,13 @@ struct Phase4View: View {
         let label: String
         let override: String
         let color: Color
+        let sound: String  // sound file name
     }
 
     private let subAnimals: [SubAnimal] = [
-        SubAnimal(id: "dog",  emoji: "🐶", label: "Cachorro",  override: "fazerSom() → \"Au!\"",   color: Color(uiColor: .systemOrange)),
-        SubAnimal(id: "cat",  emoji: "🐱", label: "Gato",      override: "fazerSom() → \"Miau!\"", color: Color(uiColor: .systemPink)),
-        SubAnimal(id: "bird", emoji: "🐦", label: "Pássaro",   override: "fazerSom() → \"Piu!\"",  color: Color(uiColor: .systemGreen)),
+        SubAnimal(id: "dog",  emoji: "🐶", label: "Dog",  override: "makeSound() → \"Woof!\"",  color: Color(uiColor: .systemOrange), sound: "woof"),
+        SubAnimal(id: "cat",  emoji: "🐱", label: "Cat",  override: "makeSound() → \"Meow!\"",  color: Color(uiColor: .systemPink),   sound: "meow"),
+        SubAnimal(id: "bird", emoji: "🐦", label: "Bird", override: "makeSound() → \"Tweet!\"", color: Color(uiColor: .systemGreen),  sound: "tweet"),
     ]
 
     @State private var revealed: Set<String> = []
@@ -29,21 +30,21 @@ struct Phase4View: View {
     enum QuizState { case unanswered, wrong(Int), correct }
 
     private let quizOptions: [(String, Bool)] = [
-        ("Cria uma nova classe do zero", false),
-        ("Substitui o comportamento herdado na subclasse", true),
-        ("Remove um método da superclasse", false),
-        ("Copia o código da superclasse", false),
+        ("Creates a new class from scratch", false),
+        ("Replaces the inherited behavior in the subclass", true),
+        ("Removes a method from the superclass", false),
+        ("Copies the code from the superclass", false),
     ]
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
 
-                sectionLabel("BLOCO 1 — MONTE A ÁRVORE DE HERANÇA")
+                sectionLabel("BLOCK 1 — BUILD THE INHERITANCE TREE")
 
                 treeCard
 
-                sectionLabel("BLOCO 2 — QUIZ: O QUE FAZ O `override`?")
+                sectionLabel("BLOCK 2 — QUIZ: WHAT DOES `override` DO?")
                     .opacity(allRevealed ? 1 : 0.4)
 
                 quizCard
@@ -54,10 +55,8 @@ struct Phase4View: View {
         }
     }
 
-    // MARK: Tree card
     private var treeCard: some View {
         VStack(spacing: 20) {
-            // Base class
             HStack {
                 Spacer()
                 VStack(spacing: 4) {
@@ -69,34 +68,32 @@ struct Phase4View: View {
                         .background(Color.appPrimary.opacity(0.10), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                         .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Color.appPrimary.opacity(0.3), lineWidth: 1.5))
 
-                    Text("func fazerSom()")
-                        .font(Font.system(size: 13, weight: .regular, design: .monospaced))
+                    Text("func makeSound()")
+                        .font(.appCode)
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
             }
 
-            // Connector line
-            Rectangle()
-                .fill(Color.appBorder)
-                .frame(width: 1.5, height: 16)
+            Rectangle().fill(Color.appBorder).frame(width: 1.5, height: 16)
 
-            // Children row
             HStack(alignment: .top, spacing: 14) {
                 ForEach(subAnimals) { animal in
                     SubAnimalNode(animal: animal, isRevealed: revealed.contains(animal.id)) {
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.65)) {
                             _ = revealed.insert(animal.id)
                         }
+                        // Play the animal's sound when revealed
+                        AudioManager.shared.playAnimal(animal.sound)
                     }
                 }
             }
 
             if allRevealed {
-                FeedbackBanner(kind: .success, message: "Cada subclasse herda Animal e sobrescreve fazerSom() com seu próprio som.")
+                FeedbackBanner(kind: .success, message: "Each subclass inherits Animal and overrides makeSound() with its own sound.")
                     .transition(.move(edge: .top).combined(with: .opacity))
             } else {
-                FeedbackBanner(kind: .neutral, message: "Toque em cada subclasse para adicioná-la à árvore.")
+                FeedbackBanner(kind: .neutral, message: "Tap each subclass to add it to the tree.")
             }
         }
         .padding(20)
@@ -105,11 +102,10 @@ struct Phase4View: View {
         .animation(.easeOut(duration: 0.25), value: allRevealed)
     }
 
-    // MARK: Quiz card
     private var quizCard: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("O que a palavra-chave **override** faz em Swift?")
-                .font(Font.system(size: 17, weight: .regular))
+            Text("What does the **override** keyword do in Swift?")
+                .font(.appBody)
                 .foregroundStyle(.primary)
 
             VStack(spacing: 10) {
@@ -125,7 +121,7 @@ struct Phase4View: View {
             }
 
             if case .correct = quizAnswer {
-                FeedbackBanner(kind: .success, message: "Exato! override indica que o método da subclasse substitui o da superclasse.")
+                FeedbackBanner(kind: .success, message: "Exactly! override signals that the subclass method replaces the superclass one.")
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
@@ -135,7 +131,6 @@ struct Phase4View: View {
         .animation(.easeOut(duration: 0.25), value: quizAnswer == .unanswered ? 0 : 1)
     }
 
-    // MARK: Helpers
     private func tapQuiz(idx: Int, isCorrect: Bool) {
         if isCorrect {
             quizAnswer = .correct
@@ -162,7 +157,6 @@ struct Phase4View: View {
     }
 }
 
-// MARK: - Sub-animal node
 struct SubAnimalNode: View {
     let animal: Phase4View.SubAnimal
     let isRevealed: Bool
@@ -170,9 +164,7 @@ struct SubAnimalNode: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Rectangle()
-                .fill(Color.appBorder)
-                .frame(width: 1.5, height: 16)
+            Rectangle().fill(Color.appBorder).frame(width: 1.5, height: 16)
 
             Button(action: isRevealed ? {} : onTap) {
                 VStack(spacing: 8) {
@@ -183,12 +175,12 @@ struct SubAnimalNode: View {
                         .multilineTextAlignment(.center)
                     if isRevealed {
                         Text("override \(animal.override)")
-                            .font(Font.system(size: 11, weight: .medium, design: .monospaced))
+                            .font(.appCaption)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     } else {
-                        Text("Toque para adicionar")
-                            .font(Font.system(size: 11, weight: .medium))
+                        Text("Tap to add")
+                            .font(.appCaption)
                             .foregroundStyle(Color(uiColor: .placeholderText))
                     }
                 }
@@ -211,7 +203,6 @@ struct SubAnimalNode: View {
     }
 }
 
-// MARK: - Reuse quiz option from Phase2
 private struct QuizOption: View {
     let emoji: String
     let label: String
@@ -223,7 +214,7 @@ private struct QuizOption: View {
             HStack(spacing: 12) {
                 Text(emoji).font(.system(size: 20))
                 Text(label)
-                    .font(Font.system(size: 15, weight: .medium))
+                    .font(.appBody)
                     .foregroundStyle(textColor)
                     .multilineTextAlignment(.leading)
                 Spacer()
@@ -243,23 +234,23 @@ private struct QuizOption: View {
 
     private var bgColor: Color {
         switch state {
-        case .idle: return Color.appFill
+        case .idle:    return Color.appFill
         case .correct: return Color.appSuccess.opacity(0.10)
-        case .wrong: return Color.appError.opacity(0.10)
+        case .wrong:   return Color.appError.opacity(0.10)
         }
     }
     private var textColor: Color {
         switch state {
-        case .idle: return .primary
+        case .idle:    return .primary
         case .correct: return .appSuccess
-        case .wrong: return .appError
+        case .wrong:   return .appError
         }
     }
     private var borderColor: Color {
         switch state {
-        case .idle: return Color.clear
+        case .idle:    return Color.clear
         case .correct: return Color.appSuccess.opacity(0.3)
-        case .wrong: return Color.appError.opacity(0.3)
+        case .wrong:   return Color.appError.opacity(0.3)
         }
     }
 }
@@ -268,7 +259,7 @@ extension Phase4View.QuizState: Equatable {
     static func == (lhs: Phase4View.QuizState, rhs: Phase4View.QuizState) -> Bool {
         switch (lhs, rhs) {
         case (.unanswered, .unanswered): return true
-        case (.correct, .correct): return true
+        case (.correct, .correct):       return true
         case (.wrong(let a), .wrong(let b)): return a == b
         default: return false
         }
