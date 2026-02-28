@@ -4,7 +4,7 @@ import SwiftUI
 struct POOQuestApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplashView()
                 .preferredColorScheme(.light)
                 .onAppear {
                         AudioManager.shared.playMusic()

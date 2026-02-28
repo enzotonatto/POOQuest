@@ -68,9 +68,10 @@ struct Phase2View: View {
                     }
 
                     HStack(spacing: 10) {
-                        ForEach([("bark()", "🗣️", -15), ("eat()", "🍖", +25), ("run()", "🏃", -20)], id: \.0) { name, emoji, delta in
+                        // Adicionámos o nome do ficheiro de som para cada método
+                        ForEach([("bark()", "🗣️", -15, "woof"), ("eat()", "🍖", +25, "eat"), ("run()", "🏃", -20, "run")], id: \.0) { name, emoji, delta, soundFile in
                             MethodBtn(emoji: emoji, label: name, used: methodsUsed.contains(name)) {
-                                callMethod(name: name, delta: delta)
+                                callMethod(name: name, delta: delta, soundFile: soundFile)
                             }
                         }
                     }
@@ -135,13 +136,16 @@ struct Phase2View: View {
         energy > 60 ? .appSuccess : energy > 30 ? .appWarning : .appError
     }
 
-    private func callMethod(name: String, delta: Int) {
+    // A função agora recebe o nome do ficheiro (soundFile)
+    private func callMethod(name: String, delta: Int, soundFile: String) {
         methodsUsed.insert(name)
         energy = max(0, min(100, energy + delta))
         let sign = delta > 0 ? "+" : ""
         log.append("rex.\(name)  →  energy \(sign)\(delta)  =  \(energy)")
-        // Dog barks on every interaction
-        AudioManager.shared.playAnimal("woof")
+        
+        // Toca o som correspondente à ação
+        AudioManager.shared.playAnimal(soundFile)
+        
         emojiScale = 1.3
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { emojiScale = 1 }
     }

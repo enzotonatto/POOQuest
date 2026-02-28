@@ -53,8 +53,8 @@ struct AboutView: View {
 
                 Spacer().frame(height: 20)
 
-                Text("Your Name")
-                    .font(.appHeadline)
+                Text("Enzo Augusto Tonatto")
+                    .font(.appTitle)
                     .foregroundStyle(.primary)
                     .opacity(appeared ? 1 : 0)
                     .offset(y: appeared ? 0 : 8)
@@ -62,19 +62,19 @@ struct AboutView: View {
 
                 Spacer().frame(height: 4)
 
-                Text("Development Student · Brazil")
-                    .font(.appCaption)
+                Text("iOS Developer at Apple Developer Academy · Brazil")
+                    .font(.appBodyMd)
                     .foregroundStyle(.secondary)
                     .opacity(appeared ? 1 : 0)
                     .animation(.easeOut(duration: 0.4).delay(0.25), value: appeared)
 
                 Spacer().frame(height: 24)
 
-                Text("I built OOP Quest for the Swift Student Challenge to turn abstract Object-Oriented Programming concepts into something visual, interactive, and accessible for everyone.")
-                    .font(.appBody)
+                Text("I created OOP Quest for the Swift Student Challenge inspired by my own college experience. During my Object-Oriented Programming course, I noticed how tricky it can be for beginners to wrap their heads around abstract concepts. I wanted to build the tool I wish I had back then! This app takes the complex, foundational pillars of OOP and turns them into an engaging, visual, and interactive journey for everyone.")
+                    .font(.appSubheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
-                    .frame(maxWidth: 500)
+                    .frame(maxWidth: 700)
                     .opacity(appeared ? 1 : 0)
                     .animation(.easeOut(duration: 0.4).delay(0.3), value: appeared)
 

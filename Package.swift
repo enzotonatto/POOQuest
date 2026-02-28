@@ -8,13 +8,13 @@ import PackageDescription
 import AppleProductTypes
 
 let package = Package(
-    name: "POO",
+    name: "OOP",
     platforms: [
         .iOS("16.0")
     ],
     products: [
         .iOSApplication(
-            name: "POO",
+            name: "OOP",
             targets: ["AppModule"],
             bundleIdentifier: "academy.POO",
             teamIdentifier: "5842KMQ5K4",
@@ -27,18 +27,18 @@ let package = Package(
                 .phone
             ],
             supportedInterfaceOrientations: [
-                .portrait,
-                .landscapeRight,
-                .landscapeLeft,
-                .portraitUpsideDown(.when(deviceFamilies: [.pad]))
+                .landscapeRight
             ]
         )
     ],
     targets: [
         .executableTarget(
             name: "AppModule",
-            path: "."
+            path: ".",
+            resources: [
+                .process("Resources")
+            ]
         )
     ],
-    swiftLanguageVersions: [.v6]
+    swiftLanguageVersions: [.version("6")]
 )

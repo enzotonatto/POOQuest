@@ -52,7 +52,7 @@ struct CompletionView: View {
 
                 Spacer().frame(height: 8)
 
-                Text("You learned the pillars of OOP in under 3 minutes.")
+                Text("You learned the pillars of OOP.")
                     .font(.appBody)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

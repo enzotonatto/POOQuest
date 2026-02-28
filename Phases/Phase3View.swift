@@ -1,16 +1,16 @@
 import SwiftUI
 
 // Phase 3: Three blocks
-// Block 1 — try to access private directly (expected error)
+// Block 1 — try to access private directly (expected error with shield feedback)
 // Block 2 — use the correct public method (success)
-// Block 3 — call heal() and confirm health changed
+// Block 3 — call heal() and confirm health changed up to the limit
 
 struct Phase3View: View {
     @Binding var isComplete: Bool
 
     @State private var block1Done = false
     @State private var block2Done = false
-    @State private var health: Int = 40
+    @State private var health: Int = 80 // Increased starting health to show the 100 cap faster
     @State private var block3Done = false
     @State private var shakeOffset: CGFloat = 0
 
@@ -20,18 +20,18 @@ struct Phase3View: View {
 
                 classCard
 
-                sectionLabel("BLOCK 1 — DIRECT ACCESS (try it!)")
+                sectionLabel("BLOCK 1 — THE THREAT (try it!)")
 
                 block1Card
 
-                sectionLabel("BLOCK 2 — ACCESS VIA METHOD")
+                sectionLabel("BLOCK 2 — SAFE READ")
                     .opacity(block1Done ? 1 : 0.4)
 
                 block2Card
                     .opacity(block1Done ? 1 : 0.4)
                     .disabled(!block1Done)
 
-                sectionLabel("BLOCK 3 — MODIFY VIA METHOD")
+                sectionLabel("BLOCK 3 — SAFE WRITE")
                     .opacity(block2Done ? 1 : 0.4)
 
                 block3Card
@@ -47,9 +47,14 @@ struct Phase3View: View {
             Text("class Animal {")
                 .font(.appCodeMd).foregroundStyle(.primary)
             Group {
-                codeLine(indent: 1, parts: [("private var", Color.appError), (" health: Int = 40", .secondary)])
+                codeLine(indent: 1, parts: [("private var", Color.appError), (" health: Int = 80", .secondary)])
                 codeLine(indent: 1, parts: [("func", Color.appPrimary), (" getHealth() -> Int", .secondary)])
-                codeLine(indent: 1, parts: [("func", Color.appPrimary), (" heal()", .secondary)])
+                
+                // Show the actual business logic to explain WHY we encapsulate
+                codeLine(indent: 1, parts: [("func", Color.appPrimary), (" heal() {", .primary)])
+                codeLine(indent: 2, parts: [("health", .primary), (" += 40", .secondary)])
+                codeLine(indent: 2, parts: [("if", Color.appPrimary), (" health > 100 { health = 100 }", .secondary)])
+                codeLine(indent: 1, parts: [("}", .primary)])
             }
             Text("}")
                 .font(.appCodeMd).foregroundStyle(.primary)
@@ -62,21 +67,26 @@ struct Phase3View: View {
 
     private var block1Card: some View {
         VStack(spacing: 14) {
-            Text("What happens if we try to access `health` directly?")
+            Text("What if a bug tries to set `health` to -999? Try it!")
                 .font(.appBody)
                 .foregroundStyle(.primary)
 
             HStack(spacing: 10) {
                 wrongAccessBtn("rex.health")
-                wrongAccessBtn("rex.health = 100")
+                wrongAccessBtn("rex.health = -999")
             }
 
             if block1Done {
-                FeedbackBanner(
-                    kind: .error,
-                    message: "error: 'health' is inaccessible due to 'private' protection level"
-                )
-                .offset(x: shakeOffset)
+                HStack(alignment: .center, spacing: 12) {
+                    Text("🛡️")
+                        .font(.system(size: 32))
+                        .offset(x: shakeOffset)
+                    
+                    FeedbackBanner(
+                        kind: .error,
+                        message: "error: 'health' is inaccessible due to 'private' protection. The shield holds!"
+                    )
+                }
                 .transition(.move(edge: .top).combined(with: .opacity))
                 .onAppear { runShake() }
             }
@@ -110,7 +120,7 @@ struct Phase3View: View {
 
     private var block2Card: some View {
         VStack(spacing: 14) {
-            Text("Now use the public method to read `health` safely.")
+            Text("Use the public method to read `health` safely.")
                 .font(.appBody)
                 .foregroundStyle(.primary)
 
@@ -144,7 +154,7 @@ struct Phase3View: View {
             }
 
             if block2Done {
-                FeedbackBanner(kind: .success, message: "rex.getHealth()  →  \(health) ✓  Safe access via public method.")
+                FeedbackBanner(kind: .success, message: "rex.getHealth()  →  \(health) ✓  Safe read via method.")
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
@@ -178,7 +188,7 @@ struct Phase3View: View {
                 Divider().frame(height: 80)
 
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("heal() is public and\nmodifies health internally.")
+                    Text("heal() is public and controls the 100 limit internally.")
                         .font(.appCode)
                         .foregroundStyle(.secondary)
                         .lineSpacing(3)
@@ -204,7 +214,7 @@ struct Phase3View: View {
             }
 
             if block3Done {
-                FeedbackBanner(kind: .success, message: "heal() modified health internally. Outside the class, nobody accesses it directly.")
+                FeedbackBanner(kind: .success, message: "Health increased but safely capped at 100! The object protects its own data.")
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
